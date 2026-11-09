@@ -67,6 +67,22 @@ group by 1, 2
 order by 3 desc
 limit 10;
 
+-- Category wise profit
+with "profit_count" as(select 
+po."Category",
+sum(po."Cost_per_box") as "Cost per box",
+sum(s."Boxes") as "Total Boxes",
+sum(s."Amount") as "Total Amount",
+round(sum(po."Cost_per_box" * s."Boxes")) as "Cost", -- cost  count
+round(sum(s."Amount"-(po."Cost_per_box" * s."Boxes"))) as "Profit", -- profit count
+round(sum(s."Amount"/nullif(s."Amount"-(po."Cost_per_box" * s."Boxes"),0)*100)) as "Margin" -- margin calculation
+from public."Sales" as s
+left join public."People" as po on s."PID" = po."PID"
+group by 1)
+select *
+from "profit_count";
+
+
 
 
 
